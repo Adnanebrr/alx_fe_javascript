@@ -5,7 +5,7 @@ let quotes = [
     { text: "The best way to predict the future is to create it.", category: "Future" }
 ];
 
-function displayRandomQuote() {
+function showRandomQuote() {
     const quoteDisplay = document.getElementById('quoteDisplay');
     const randomIndex = Math.floor(Math.random() * quotes.length);
     const quote = quotes[randomIndex];
@@ -35,13 +35,11 @@ function addQuote() {
         document.getElementById('newQuoteText').value = '';
         document.getElementById('newQuoteCategory').value = '';
 
-        displayRandomQuote();
-        alert('Quote added successfully!');
-    } else {
-        alert('Please enter both a quote and a category.');
+        showRandomQuote();
     }
 }
 
-document.getElementById('newQuote').addEventListener('click', displayRandomQuote);
-
-displayRandomQuote();
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('newQuote').addEventListener('click', showRandomQuote);
+    showRandomQuote();
+});
