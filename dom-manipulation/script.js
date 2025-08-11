@@ -100,6 +100,38 @@ document.getElementById('importFile').addEventListener('change', function(event)
     fileReader.readAsText(event.target.files[0]);
 });
 
+async function syncQuotesWithServer() {
+    const statusDiv = document.getElementById('status');
+    statusDiv.textContent = 'Syncing with server...';
+
+    const serverQuotes = [
+        { text: "The only source of knowledge is experience.", category: "Knowledge" },
+        { text: "Logic will get you from A to B. Imagination will take you everywhere.", category: "Imagination" }
+    ];
+
+    try {
+        const serverQuotesResponse = await Promise.resolve(serverQuotes);
+        
+        let newQuotes = serverQuotesResponse.filter(serverQuote => 
+            !quotes.some(localQuote => localQuote.text === serverQuote.text)
+        );
+
+        quotes.push(...newQuotes);
+        saveQuotes();
+        populateCategories();
+        filterQuotes();
+        
+        if (newQuotes.length > 0) {
+            statusDiv.textContent = 'Sync complete. New quotes added.';
+        } else {
+            statusDiv.textContent = 'Sync complete. No new quotes were added.';
+        }
+
+    } catch (error) {
+        statusDiv.textContent = 'Error syncing with server.';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     loadQuotes();
     populateCategories();
@@ -109,5 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     document.getElementById('newQuote').addEventListener('click', showRandomQuote);
     document.getElementById('exportQuotes').addEventListener('click', exportQuotes);
+    document.getElementById('syncQuotes').addEventListener('click', syncQuotesWithServer);
     showRandomQuote();
 });
