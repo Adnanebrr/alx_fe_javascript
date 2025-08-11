@@ -74,6 +74,7 @@ function addQuote() {
         saveQuotes();
         populateCategories();
         filterQuotes();
+        postQuoteToServer(newQuote);
     }
 }
 
@@ -99,6 +100,20 @@ document.getElementById('importFile').addEventListener('change', function(event)
     };
     fileReader.readAsText(event.target.files[0]);
 });
+
+async function postQuoteToServer(quote) {
+    try {
+        await fetch('https://jsonplaceholder.typicode.com/posts', {
+            method: 'POST',
+            body: JSON.stringify(quote),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    } catch (error) {
+        console.error('Error posting quote to server:', error);
+    }
+}
 
 async function fetchQuotesFromServer() {
     try {
@@ -148,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('exportQuotes').addEventListener('click', exportQuotes);
     document.getElementById('syncQuotes').addEventListener('click', syncQuotes);
     
-    setInterval(syncQuotes, 30000); 
+    setInterval(syncQuotes, 30000);
 
     showRandomQuote();
 });
