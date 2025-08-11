@@ -75,6 +75,7 @@ function addQuote() {
         populateCategories();
         filterQuotes();
         postQuoteToServer(newQuote);
+        alert('Quote added successfully!');
     }
 }
 
@@ -149,7 +150,7 @@ async function syncQuotes() {
     saveQuotes();
     populateCategories();
     filterQuotes();
-    statusDiv.textContent = 'Quotes synced successfully!';
+    statusDiv.textContent = 'Quotes synced with server!';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
