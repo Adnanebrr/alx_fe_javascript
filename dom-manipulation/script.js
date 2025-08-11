@@ -100,36 +100,41 @@ document.getElementById('importFile').addEventListener('change', function(event)
     fileReader.readAsText(event.target.files[0]);
 });
 
-async function syncQuotesWithServer() {
-    const statusDiv = document.getElementById('status');
-    statusDiv.textContent = 'Syncing with server...';
-
-    const serverQuotes = [
-        { text: "The only source of knowledge is experience.", category: "Knowledge" },
-        { text: "Logic will get you from A to B. Imagination will take you everywhere.", category: "Imagination" }
-    ];
-
+async function fetchQuotesFromServer() {
     try {
-        const serverQuotesResponse = await Promise.resolve(serverQuotes);
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+        const serverPosts = await response.json();
         
-        let newQuotes = serverQuotesResponse.filter(serverQuote => 
-            !quotes.some(localQuote => localQuote.text === serverQuote.text)
-        );
-
-        quotes.push(...newQuotes);
-        saveQuotes();
-        populateCategories();
-        filterQuotes();
-        
-        if (newQuotes.length > 0) {
-            statusDiv.textContent = 'Sync complete. New quotes added.';
-        } else {
-            statusDiv.textContent = 'Sync complete. No new quotes were added.';
-        }
-
+        return serverPosts.map(post => ({
+            text: post.title,
+            category: 'Server'
+        }));
     } catch (error) {
-        statusDiv.textContent = 'Error syncing with server.';
+        return [];
     }
+}
+
+async function syncQuotes() {
+    const statusDiv = document.getElementById('status');
+    statusDiv.textContent = 'Syncing quotes...';
+
+    const serverQuotes = await fetchQuotesFromServer();
+    const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+
+    const mergedQuotes = [...localQuotes];
+
+    for (const serverQuote of serverQuotes) {
+        const exists = mergedQuotes.some(localQuote => localQuote.text === serverQuote.text);
+        if (!exists) {
+            mergedQuotes.push(serverQuote);
+        }
+    }
+
+    quotes = mergedQuotes;
+    saveQuotes();
+    populateCategories();
+    filterQuotes();
+    statusDiv.textContent = 'Quotes synced successfully!';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -141,6 +146,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     document.getElementById('newQuote').addEventListener('click', showRandomQuote);
     document.getElementById('exportQuotes').addEventListener('click', exportQuotes);
-    document.getElementById('syncQuotes').addEventListener('click', syncQuotesWithServer);
+    document.getElementById('syncQuotes').addEventListener('click', syncQuotes);
+    
+    setInterval(syncQuotes, 30000); 
+
     showRandomQuote();
 });
