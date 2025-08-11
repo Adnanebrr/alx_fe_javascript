@@ -21,6 +21,9 @@ function showRandomQuote() {
     quoteDisplay.appendChild(quoteCategory);
 }
 
+function createAddQuoteForm() {
+}
+
 function addQuote() {
     const newQuoteText = document.getElementById('newQuoteText').value.trim();
     const newQuoteCategory = document.getElementById('newQuoteCategory').value.trim();
@@ -34,7 +37,6 @@ function addQuote() {
 
         document.getElementById('newQuoteText').value = '';
         document.getElementById('newQuoteCategory').value = '';
-
         showRandomQuote();
     }
 }
